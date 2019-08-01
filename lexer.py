@@ -5,10 +5,6 @@ import string
 
 from partpy import SourceString, PartpyError
 
-code='''int main() {
-    return 2;
-}'''
-
 class Token(tuple): pass
 
 class Tokens(list):
@@ -53,6 +49,9 @@ def lex(s):
     return Lexer(s).lex(compile_exprs(Tokens.types))
 
 if __name__ == '__main__':
+    code='''int main() {
+        return 2;
+    }'''
     print('CODE:\n\n', code, '\n\nTokens:')
     for tok in lex(code):
         print(tok)
