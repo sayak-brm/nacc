@@ -5,8 +5,6 @@ import string
 
 from partpy import SourceString, PartpyError
 
-class Token(tuple): pass
-
 class Tokens(list):
     types = [
         ('OPEN_BRACE', '{'),
@@ -31,7 +29,7 @@ class Lexer(SourceString):
                 match = regex.match(self.rest_of_string())
                 if match:
                     text = match.group(0)
-                    toks.append(Token((tag, text)))
+                    toks.append((tag, text))
                     break
             if not match:
                 raise PartpyError(self, msg="Illegal Character")
