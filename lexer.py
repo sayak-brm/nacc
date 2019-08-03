@@ -6,29 +6,57 @@ import string
 from partpy import SourceString, PartpyError
 
 class Token:
+    """The Token class represents indivudual lexed tokens.
+    """
     def __init__(self, tag, text):
+        """Initializes each token.
+
+        Arguments:
+            tag {str} -- Token Type
+            text {str} -- Token Text
+        """
         self.tag=tag
         self.text=text
 
     def __repr__(self):
+        """Pretty-printing for tokens.
+        """
         return "{} {}token with text:  {}".format(
             self.tag, '\t'*(2-len(self.tag)//7), self.text)
 
 class Tokens(list):
+    """List subclass for storing lexed tokens.
+    """
     types = [
-        ('OPEN_BRACE', '{'),
-        ('CLOSED_BRACE', '}'),
-        ('OPEN_PAREN', '\\('),
-        ('CLOSED_PAREN', '\\)'),
-        ('SEMICOLON', ';'),
-        ('INT', 'int'),
-        ('RETURN', 'return'),
-        ('IDENTIFIER', '[a-zA-Z]\\w*'),
-        ('INT_LITERAL', '[0-9]+')
+        ('OPEN_BRACE',      r'{'),
+        ('CLOSED_BRACE',    r'}'),
+        ('OPEN_PAREN',      r'\('),
+        ('CLOSED_PAREN',    r'\)'),
+        ('SEMICOLON',       r';'),
+        ('INT',             r'int'),
+        ('RETURN',          r'return'),
+        ('IDENTIFIER',      r'[a-zA-Z]\w*'),
+        ('INT_LITERAL',     r'[0-9]+')
     ]
 
 class Lexer(SourceString):
+    """Lexer for splitting and classifying tokens.
+
+    Raises:
+        PartpyError: Unknown/Illegal character in input.
+    """
     def lex(self, exprs):
+        """Lexer function
+
+        Arguments:
+            exprs {tuple} -- (Expr Tag, Token Regex)
+
+        Raises:
+            PartpyError: Unknown/Illegal character in input.
+
+        Returns:
+            Tokens(list) -- List of lexed tokens.
+        """
         toks=Tokens()
         while not self.eos:
             self.skip_whitespace(1)
@@ -44,23 +72,33 @@ class Lexer(SourceString):
                 raise PartpyError(self,
                     msg="Illegal Character")
             else: self.eat_length(match.end(0))
+            self.skip_whitespace(1)
         return toks
 
 def compile_exprs(exprs):
+    """Compiles regex expressions.
+
+    Arguments:
+        exprs {tuple} -- (Expr Tag, Regex String)
+
+    Returns:
+        tuple -- (Expr Tag, Compiled Regex)
+    """
     i=0
     for expr in exprs:
         exprs[i] = (expr[0], re.compile(expr[1]))
         i+=1
     return exprs
 
-def lex(s):
-    return Lexer(s).lex(compile_exprs(Tokens.types))
-
 if __name__ == '__main__':
+    """Tests the lexer using sample code.
+    """
     code='''
 int main() {
     return 2;
-}'''
-    print('{}\n\nTokens:'.format(code))
+}
+'''
+    print('{}\nTokens:'.format(Lexer(code).lex(
+        compile_exprs(Tokens.types))))
     for tok in lex(code):
         print(tok)
