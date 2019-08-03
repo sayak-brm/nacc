@@ -5,6 +5,10 @@ import string
 
 from partpy import SourceString, PartpyError
 
+class LexerError(PartpyError):
+    """Lexer Errors"""
+    pass
+
 class Token:
     """The Token class represents indivudual lexed tokens.
     """
@@ -69,7 +73,7 @@ class Lexer(SourceString):
                     toks.append(Token(tag, text))
                     break
             if not match:
-                raise PartpyError(self,
+                raise LexerError(self,
                     msg="Illegal Character")
             else: self.eat_length(match.end(0))
             self.skip_whitespace(1)
@@ -98,7 +102,7 @@ int main() {
     return 2;
 }
 '''
-    print('{}\nTokens:'.format(Lexer(code).lex(
-        compile_exprs(Tokens.types))))
-    for tok in lex(code):
+    print('{}\nTokens:'.format(code))
+    for tok in Lexer(code).lex(
+        compile_exprs(Tokens.types)):
         print(tok)
