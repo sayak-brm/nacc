@@ -5,6 +5,15 @@ import string
 
 from partpy import SourceString, PartpyError
 
+class Token:
+    def __init__(self, tag, text):
+        self.tag=tag
+        self.text=text
+
+    def __repr__(self):
+        return "{} {}token with text:  {}".format(
+            self.tag, '\t'*(2-len(self.tag)//7), self.text)
+
 class Tokens(list):
     types = [
         ('OPEN_BRACE', '{'),
@@ -29,10 +38,11 @@ class Lexer(SourceString):
                 match = regex.match(self.rest_of_string())
                 if match:
                     text = match.group(0)
-                    toks.append((tag, text))
+                    toks.append(Token(tag, text))
                     break
             if not match:
-                raise PartpyError(self, msg="Illegal Character")
+                raise PartpyError(self,
+                    msg="Illegal Character")
             else: self.eat_length(match.end(0))
         return toks
 
@@ -47,9 +57,10 @@ def lex(s):
     return Lexer(s).lex(compile_exprs(Tokens.types))
 
 if __name__ == '__main__':
-    code='''int main() {
-        return 2;
-    }'''
-    print('CODE:\n\n', code, '\n\nTokens:')
+    code='''
+int main() {
+    return 2;
+}'''
+    print('{}\n\nTokens:'.format(code))
     for tok in lex(code):
         print(tok)
