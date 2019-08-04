@@ -55,7 +55,7 @@ class Parser:
                 self.toks[self.cur].text)
         self.cur+=1
 
-        ret = Node("STMT", None, [self.Expression()])
+        ret = Node("STMT", ["RETURN"], [self.Expression()])
 
         if self.toks[self.cur].tag != "SEMICOLON":
             raise ParserError(
