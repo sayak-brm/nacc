@@ -13,10 +13,15 @@ class Node:
     def get_code(self, gen_lib):
         return gen_lib[self.tag]
 
-    def __repr__(self):
-        if not self.children: return self.tag
-        return self.tag + '\n' + '\n'.join(
-            [child.__repr__() for child in self.children])
+    def __repr__(self, level=0):
+        ret = self.tag
+        if self.params:
+            ret += (' - ' + ', '.join(
+                [p for p in self.params]))
+        if self.children: ret += '\n' + '\n'.join(
+            [child.__repr__(level + 1) for child \
+                 in self.children])
+        return '  '*level + ret
 
 class Parser:
     def __init__(self, toks):
